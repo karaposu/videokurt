@@ -9,12 +9,12 @@
 - **Frame Rate Support**: Handle 24-60 fps source videos
 - **Performance Target**: Process videos 5-10x faster than real-time in balanced mode
 
-### Detection Accuracy
-- **Scene Change Detection**: 95%+ accuracy for hard cuts
-- **Scroll Detection**: Detect scrolls > 50 pixels with 90%+ accuracy
-- **Idle Detection**: Identify idle periods > 1.5 seconds with 99%+ accuracy
-- **False Positive Rate**: < 5% for activity detection
-- **Confidence Scoring**: Provide confidence scores for all detections
+### Detections 
+- **Scene Change Detection**
+- **Scroll Detection**
+- **Idle Detection**
+- **False Positive Rate**
+- **Confidence Scoring**: Provide confidence scores for all detections 
 
 ### Processing Modes
 - **Fast Mode**: 480p processing, skip frames, 10x real-time

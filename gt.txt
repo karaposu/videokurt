@@ -1,0 +1,22 @@
+
+
+
+
+00:00:01:20 - 00:00:06:20 full idle
+
+
+00:00:06:20- 00:00:09:14 full scroll 
+00:00:09:14- 00:00:12:21 full idle
+
+
+00:00:12:21 - 00:00:21:44 full scroll
+
+
+00:00:21:44- 00:00:22:25 full idle
+
+00:00:22:25- 00:00:22:29  screen change animation (in iphone when you swipe up from the down menu and it opens all the open app view )started, but only most edge corners changed a bit
+
+00:00:22:31- 00:00:24:10   screen change animation continues and finsihes,  
+
+00:00:24:59 - 00:00:29:26             already opened instagram is visible. a video is playing on the feed. 
+
