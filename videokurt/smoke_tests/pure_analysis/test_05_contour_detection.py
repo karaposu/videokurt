@@ -6,7 +6,7 @@ Run: python -m videokurt.smoke_tests.pure_analysis.test_05_contour_detection
 """
 
 import numpy as np
-from videokurt.analysis_models import ContourDetection
+from videokurt.raw_analysis.contour_detection import ContourDetection
 
 
 def create_frames_with_shapes():

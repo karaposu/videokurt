@@ -6,7 +6,7 @@ Run: python -m videokurt.smoke_tests.pure_analysis.test_07_motion_heatmap
 """
 
 import numpy as np
-from videokurt.analysis_models import MotionHeatmap
+from videokurt.raw_analysis.motion_heatmap import MotionHeatmap
 from videokurt.smoke_tests.pure_analysis.test_utils import load_video_frames, get_video_segment
 
 

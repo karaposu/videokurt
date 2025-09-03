@@ -1,276 +1,88 @@
-# How VideoKurt is Intended to Use
 
-## Quick Start
+# Different ways how VideoKurt is can bed used
 
-```python
+videokurt interface works in such way 
+
+
 from videokurt import VideoKurt
 
-# Initialize with default calibration
+
 vk = VideoKurt()
 
-# Analyze a video
-results = vk.analyze("path/to/video.mp4")
+vk.add_analysis(analysis_name_here)
+vk.add_analysis(another_analysis_name_here)
 
-# Get activity timeline and events
-activity_timeline = results["activity"]
-detected_events = results["events"]
-```
+this way we tell videokurt which analysis we are interested. 
 
-## Core Usage Patterns
+vk.configure(frame_step=5, resolution_scale=0.2, )  
 
-### 1. Basic Video Analysis
 
-```python
-# Simplest usage - auto-detect everything
-vk = VideoKurt()
-analysis = vk.analyze("recording.mp4")
 
-# Check when things happened
-for period in analysis["activity"]:
-    if period["active"]:
-        print(f"Activity from {period['start']}s to {period['end']}s")
-```
+Simple usage - just enable blur with defaults
+vk.configure(blur=True)  # Uses kernel_size=13
 
-### 2. Calibrated Detection for Specific Use Cases
 
-```python
-# For mobile app recordings
-vk = VideoKurt(preset="mobile_app")
+vk.configure(blur=True, blur_kernel_size=21)  # Stronger blur
 
-# For desktop screen recordings  
-vk = VideoKurt(preset="desktop")
+VideoKurt provides three preprocessing techniques that can be applied to any analysis:
 
-# For presentation/slides
-vk = VideoKurt(preset="presentation")
+  1. Downsampling (Temporal Reduction)
 
-# For app navigation tracking (Advanced)
-vk = VideoKurt(preset="app_navigation")
+  - What: Skip frames to reduce processing load
+  - Parameter: frame_step=N (process every Nth frame)
+  - Example: frame_step=3 → process frames 0, 3, 6, 9...
+  - Use when: Video has high frame rate or redundant frames
 
-# Custom calibration
-vk = VideoKurt(calibration={
-    "scene_change": {"threshold": 0.2},  # More sensitive
-    "scroll": {"min_velocity": 30},      # Detect slower scrolls
-    "idle_wait": {"min_duration": 2.0}   # Longer idle threshold
-})
-```
+  2. Downscaling (Spatial Reduction)
 
-### 3. Performance-Optimized Processing
+  - What: Reduce resolution of each frame
+  - Parameter: resolution_scale=0.X (fraction of original size)
+  - Example: resolution_scale=0.5 → 1920×1080 becomes 960×540
+  - Use when: High resolution isn't needed for detection
 
-```python
-# Fast mode for quick overview
-vk = VideoKurt(mode="fast")
-quick_analysis = vk.analyze("long_video.mp4")
+  3. Blur (Detail Reduction)
 
-# Thorough mode for detailed analysis
-vk = VideoKurt(mode="thorough")
-detailed_analysis = vk.analyze("important_recording.mp4")
+  - What: Apply Gaussian blur to remove fine details
+  - Parameters: blur=True/False, blur_kernel_size=N (odd number)
+  - Example: blur=True, blur_kernel_size=13 → smooth out text/noise
+  - Use when: Small details interfere with motion detection
 
-# With specific optimization settings
-vk = VideoKurt(
-    resolution="720p",      # Downscale for speed
-    skip_frames=2,          # Process every 3rd frame
-    parallel_processing=True # Use multiple cores
-)
-```
 
-## Integration with VideoQuery
+vk.configure(
+      frame_step=2,         # Half the frames
+      resolution_scale=0.5, # Quarter the pixels
+      blur=True            # Remove noise
+  )
+  Result: 8x faster processing with cleaner motion detection
 
-### Primary Use Case: Frame Selection
 
-```python
-# VideoKurt tells VideoQuery WHEN to look
-vk = VideoKurt()
-timeline = vk.analyze(video_path)
+analysis_results= vk.analyze(path_to_the_video)
+this is valid usecase, it will take so much space in RAM but we let user do that. 
 
-# VideoQuery uses this to sample frames intelligently
-frames_to_analyze = []
-for period in timeline["activity"]:
-    if period["active"]:
-        # Extract frames from active periods
-        frames_to_analyze.extend(
-            extract_frames(video_path, period["start"], period["end"])
-        )
-```
+vk.analyze(path_to_the_video)
 
-### Event-Driven Analysis
 
-```python
-# VideoKurt identifies WHAT happened mechanically
-events = vk.analyze(video_path)["events"]
 
-# VideoQuery interprets what it means semantically
-for event in events:
-    if event["type"] == "scene_change":
-        # VideoQuery: "User navigated to new screen"
-        analyze_new_screen(video_path, event["start"])
-    
-    elif event["type"] == "scroll":
-        # VideoQuery: "User searching through content"
-        check_for_target_content(video_path, event["start"], event["end"])
-    
-    elif event["type"] == "popup":
-        # VideoQuery: "Dialog appeared, read its contents"
-        extract_dialog_text(video_path, event["start"])
-```
 
-### Segmentation for Batch Processing
 
-```python
-# VideoKurt segments video into logical chunks
-segments = vk.analyze(video_path)["segments"]
 
-# VideoQuery processes each segment based on activity
-for segment in segments:
-    if segment["activity_score"] > 0.7:
-        # High activity - detailed analysis
-        detailed_llm_analysis(segment)
-    elif segment["activity_score"] > 0.3:
-        # Medium activity - standard analysis
-        standard_llm_analysis(segment)
-    else:
-        # Low activity - skip or minimal analysis
-        skip_or_quick_check(segment)
-```
 
-## Advanced Usage
 
-### 1. Custom Event Detection
 
-```python
-# Add custom loading indicator patterns
-vk = VideoKurt()
-vk.add_custom_pattern(
-    name="custom_spinner",
-    template_path="./templates/app_spinner.png",
-    event_type="prompted_wait"
-)
 
-# Detect platform-specific UI elements
-vk.add_custom_pattern(
-    name="instagram_story_ring",
-    template_path="./templates/ig_story.png",
-    event_type="ui_element"
-)
-```
 
-### 1.5 Image Detection (Advanced)
 
-```python
-# Detect specific images/UI elements in video
-vk = VideoKurt()
 
-# Single image detection
-vk.detect_image(
-    video_path="recording.mp4",
-    image_path="button_screenshot.png",
-    threshold=0.85  # Confidence threshold
-)
-# Returns: [{"timestamp": 5.2, "confidence": 0.92, "location": (x, y, w, h)}, ...]
 
-# Multiple image detection
-images_to_find = [
-    {"path": "login_button.png", "name": "login"},
-    {"path": "error_dialog.png", "name": "error"},
-    {"path": "success_checkmark.png", "name": "success"}
-]
 
-detections = vk.detect_images(
-    video_path="app_test.mp4",
-    images=images_to_find,
-    method="feature_matching"  # More robust than template matching
-)
 
-# Output includes all appearances
-for detection in detections:
-    print(f"{detection['name']} found at {detection['timestamp']}s")
 
-# Track UI element lifecycle
-element_timeline = vk.track_element(
-    video_path="recording.mp4",
-    element_image="popup_dialog.png",
-    track_lifecycle=True  # Track appear/disappear events
-)
-# Returns: {"first_appearance": 3.2, "last_appearance": 8.7, "total_duration": 5.5}
-```
 
-### 1.6 Persistent UI Frame Detection (Advanced)
 
-```python
-# Detect and track persistent navigation elements
-vk = VideoKurt(preset="app_navigation")
 
-# Analyze app with bottom navigation
-analysis = vk.analyze("instagram_recording.mp4")
 
-# Extract persistent UI information
-for event in analysis["events"]:
-    if event["type"] == "persistent_ui":
-        print(f"App UI detected: {event['metadata']['app_identifier']}")
-        print(f"Active tab: {event['metadata']['active_section']}")
-        print(f"Navigation type: {event['metadata']['layout_type']}")
 
-# Track navigation changes within same app
-nav_changes = vk.track_navigation_state(
-    video_path="app_recording.mp4",
-    reference_ui={
-        "bottom_nav": "templates/instagram_bottom_nav.png",
-        "top_bar": "templates/instagram_header.png"
-    }
-)
-# Returns timeline of tab/section changes
 
-# Detect app switches based on UI chrome changes
-app_sessions = vk.detect_app_sessions(
-    video_path="multi_app_recording.mp4",
-    ui_templates=[
-        {"name": "instagram", "template": "templates/ig_nav.png"},
-        {"name": "twitter", "template": "templates/twitter_nav.png"},
-        {"name": "tiktok", "template": "templates/tiktok_nav.png"}
-    ]
-)
-# Returns: [{"app": "instagram", "start": 0, "end": 45}, {"app": "twitter", "start": 45, "end": 120}]
-
-# Monitor specific UI regions for stability
-vk.monitor_ui_regions(
-    video_path="app_test.mp4",
-    regions={
-        "bottom": {"y": 0.85, "height": 0.15},  # Bottom 15% of screen
-        "top": {"y": 0, "height": 0.1}          # Top 10% of screen
-    },
-    stability_threshold=0.9  # Consider stable if 90% similar across frames
-)
-```
-
-### 2. Real-time Analysis (Streaming)
-
-```python
-# Process video in chunks as it's being recorded
-vk = VideoKurt(streaming=True)
-
-for chunk in video_stream:
-    partial_analysis = vk.analyze_chunk(chunk)
-    if partial_analysis["activity"][-1]["active"]:
-        # Trigger immediate processing if activity detected
-        process_immediately(chunk)
-```
-
-### 3. Multi-pass Analysis
-
-```python
-# First pass: Quick activity detection
-vk_fast = VideoKurt(mode="fast")
-overview = vk_fast.analyze(video_path)
-
-# Second pass: Detailed analysis of active regions only
-vk_detailed = VideoKurt(mode="thorough")
-for period in overview["activity"]:
-    if period["active"]:
-        detailed = vk_detailed.analyze_segment(
-            video_path, 
-            start=period["start"], 
-            end=period["end"]
-        )
-```
 
 ### 4. Export for Manual Review
 

@@ -2,6 +2,7 @@ opencv-python
 numpy
 scipy
 scikit-image
+scikit-learn
 
 
 # We don't need to understand everything to know what's worth understanding.

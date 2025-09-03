@@ -12,7 +12,7 @@ from typing import Dict, List, Optional, Union, Any
 from pathlib import Path
 
 from videokurt.models import RawAnalysisResults, RawAnalysis
-from videokurt.analysis_models import (
+from videokurt.raw_analysis import (
     ANALYSIS_REGISTRY,
     BaseAnalysis,
     FrameDiff,

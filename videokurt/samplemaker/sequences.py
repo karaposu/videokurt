@@ -8,6 +8,81 @@ from .motion import simulate_scroll, simulate_popup
 from .effects import add_noise
 
 
+def create_frames_with_pattern(
+    num_frames: int = 10,
+    width: int = 100,
+    height: int = 100,
+    pattern: str = 'moving_line'
+) -> List[np.ndarray]:
+    """Create frames with specific test patterns.
+    
+    Args:
+        num_frames: Number of frames to generate
+        width: Frame width in pixels
+        height: Frame height in pixels  
+        pattern: Type of pattern ('moving_line', 'moving_circle', 'gradient', 'checkerboard')
+        
+    Returns:
+        List of frames with the specified pattern
+    """
+    import cv2
+    frames = []
+    
+    if pattern == 'moving_line':
+        # Create frames with moving diagonal line (good for motion tests)
+        for i in range(num_frames):
+            frame = np.zeros((height, width, 3), dtype=np.uint8)
+            # Draw diagonal line that moves
+            offset = int((i / num_frames) * width)
+            cv2.line(frame, (offset, 0), (min(offset + 20, width-1), min(20, height-1)), 
+                    (255, 255, 255), 2)
+            # Add frame number for debugging
+            cv2.putText(frame, str(i), (10, height-10), cv2.FONT_HERSHEY_SIMPLEX, 
+                       0.5, (255, 255, 255), 1)
+            frames.append(frame)
+            
+    elif pattern == 'moving_circle':
+        # Create frames with moving circle
+        for i in range(num_frames):
+            frame = np.zeros((height, width, 3), dtype=np.uint8)
+            x = int((i / num_frames) * width)
+            y = height // 2
+            cv2.circle(frame, (x, y), 10, (255, 255, 255), -1)
+            frames.append(frame)
+            
+    elif pattern == 'gradient':
+        # Create gradient frames (good for edge detection tests)
+        for i in range(num_frames):
+            frame = create_gradient_frame((height, width))
+            # Convert to 3-channel if needed
+            if len(frame.shape) == 2:
+                frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
+            frames.append(frame)
+            
+    elif pattern == 'checkerboard':
+        # Create checkerboard frames (good for blur tests)
+        for i in range(num_frames):
+            frame = create_checkerboard((height, width), square_size=10)
+            # Convert to 3-channel if needed
+            if len(frame.shape) == 2:
+                frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
+            # Add some variation between frames
+            if i % 2 == 1:
+                frame = cv2.bitwise_not(frame)
+            frames.append(frame)
+    else:
+        # Default: solid color frames with text
+        for i in range(num_frames):
+            frame = create_solid_frame((height, width), color=50)
+            if len(frame.shape) == 2:
+                frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
+            cv2.putText(frame, f"Frame {i}", (width//4, height//2), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+            frames.append(frame)
+    
+    return frames
+
+
 def create_frame_sequence(
     num_frames: int = 10,
     size: Tuple[int, int] = (20, 20),

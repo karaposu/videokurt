@@ -7,7 +7,7 @@ Run: python -m videokurt.smoke_tests.pure_analysis.test_03_edge_detection
 """
 
 import numpy as np
-from videokurt.analysis_models import EdgeCanny
+from videokurt.raw_analysis.edge_canny import EdgeCanny
 
 
 def create_frames_with_edges():
@@ -41,9 +41,9 @@ def test_edge_detection():
     
     # Check results
     assert result.method == 'edge_canny'
-    assert 'edges' in result.data
+    assert 'edge_map' in result.data
     
-    edges = result.data['edges']
+    edges = result.data['edge_map']
     assert edges.shape[0] == len(frames)
     assert edges.dtype == np.uint8
     
@@ -67,12 +67,12 @@ def test_threshold_sensitivity():
     # Low thresholds - more edges
     analyzer_low = EdgeCanny(downsample=0.5, low_threshold=30, high_threshold=80)
     result_low = analyzer_low.analyze(frames)
-    edges_low = np.sum(result_low.data['edges'] > 0)
+    edges_low = np.sum(result_low.data['edge_map'] > 0)
     
     # High thresholds - fewer edges
     analyzer_high = EdgeCanny(downsample=0.5, low_threshold=100, high_threshold=200)
     result_high = analyzer_high.analyze(frames)
-    edges_high = np.sum(result_high.data['edges'] > 0)
+    edges_high = np.sum(result_high.data['edge_map'] > 0)
     
     assert edges_low > edges_high, "Lower thresholds should detect more edges"
     
@@ -81,37 +81,36 @@ def test_threshold_sensitivity():
     print(f"✓ Ratio: {edges_low/edges_high:.2f}x more edges with low threshold")
 
 
-def test_blur_preprocessing():
-    """Test Gaussian blur preprocessing effect."""
-    print("\nTest 3: Blur Preprocessing")
+def test_downsample_performance():
+    """Test downsampling for performance."""
+    print("\nTest 3: Downsample Performance")
     print("-" * 40)
     
-    # Create noisy frames
+    # Create test frames
     frames = []
     for i in range(5):
-        frame = np.zeros((100, 100, 3), dtype=np.uint8)
-        # Add noise
-        noise = np.random.randint(0, 50, (100, 100, 3), dtype=np.uint8)
-        frame = frame + noise
-        # Add strong edge
-        frame[40:60, 40:60] = 255
+        frame = np.zeros((200, 200, 3), dtype=np.uint8)
+        # Add patterns
+        frame[50:150, 50:150] = 255
+        frame[75:125, 75:125] = 0
         frames.append(frame)
     
-    # Without blur
-    analyzer_no_blur = EdgeCanny(downsample=0.5, blur_kernel=0)
-    result_no_blur = analyzer_no_blur.analyze(frames)
+    # Full resolution
+    analyzer_full = EdgeCanny(downsample=1.0, low_threshold=50, high_threshold=150)
+    result_full = analyzer_full.analyze(frames)
     
-    # With blur
-    analyzer_blur = EdgeCanny(downsample=0.5, blur_kernel=5)
-    result_blur = analyzer_blur.analyze(frames)
+    # Half resolution
+    analyzer_half = EdgeCanny(downsample=0.5, low_threshold=50, high_threshold=150)
+    result_half = analyzer_half.analyze(frames)
     
-    # Blur should reduce noise edges
-    noise_edges_no_blur = np.sum(result_no_blur.data['edges'] > 0)
-    noise_edges_blur = np.sum(result_blur.data['edges'] > 0)
+    # Quarter resolution
+    analyzer_quarter = EdgeCanny(downsample=0.25, low_threshold=50, high_threshold=150)
+    result_quarter = analyzer_quarter.analyze(frames)
     
-    print(f"✓ Edges without blur: {noise_edges_no_blur}")
-    print(f"✓ Edges with blur: {noise_edges_blur}")
-    print(f"✓ Blur reduces noisy edges: {noise_edges_no_blur > noise_edges_blur}")
+    print(f"✓ Full resolution shape: {result_full.data['edge_map'].shape}")
+    print(f"✓ Half resolution shape: {result_half.data['edge_map'].shape}")
+    print(f"✓ Quarter resolution shape: {result_quarter.data['edge_map'].shape}")
+    print(f"✓ Speedup (full->quarter): {result_full.processing_time / result_quarter.processing_time:.2f}x")
 
 
 if __name__ == "__main__":
@@ -122,7 +121,7 @@ if __name__ == "__main__":
     try:
         test_edge_detection()
         test_threshold_sensitivity()
-        test_blur_preprocessing()
+        test_downsample_performance()
         
         print("\n" + "="*50)
         print("ALL TESTS PASSED ✓")

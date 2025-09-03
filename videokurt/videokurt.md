@@ -306,17 +306,3 @@ VideoQuery uses this information to:
 - Provide better temporal context in results
 - Optimize cost and performance
 
-## Technical Requirements
-
-- OpenCV 4.0+
-- NumPy for array operations
-- SciPy for signal processing
-- Optional: CUDA support for GPU acceleration
-
-## Limitations
-
-- **No Semantic Understanding**: Doesn't know what actions mean
-- **Visual Only**: No audio analysis
-- **Screen Recording Optimized**: Best for UI/digital content
-- **No OCR**: Doesn't read text (that's VideoQuery's job)
-- **Single Video**: No multi-stream correlation

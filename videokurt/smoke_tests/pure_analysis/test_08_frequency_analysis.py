@@ -6,7 +6,7 @@ Run: python -m videokurt.smoke_tests.pure_analysis.test_08_frequency_analysis
 """
 
 import numpy as np
-from videokurt.analysis_models import FrequencyFFT
+from videokurt.raw_analysis.frequency_fft import FrequencyFFT
 from videokurt.smoke_tests.pure_analysis.test_utils import load_video_frames, get_video_segment
 
 

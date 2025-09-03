@@ -1,0 +1,7 @@
+The idea is about leveraging existing video footage from places like restaurants, factories, and schools, where cameras are already recording. This footage usually contains high-value information, but until LLMs it was not possible to inspect or analyze it for specific business rules in a semantic way. By using LLMs, we can extract meaningful insights from that footage.
+
+For instance, in a kitchen, you could automatically detect if someone is touching food with their hands or using their phone, helping ensure compliance with hygiene and safety standards. This analysis doesn’t have to happen in real time, and it can be used to improve overall business operations and safety.
+
+Another great example would be in the retail sector. Imagine a clothing store that has cameras monitoring the sales floor. The system could detect if a customer is putting clothes into their bag inside the store (a possible theft situation), or if a customer clearly needed assistance but no staff member responded. These insights would not only help with loss prevention but also improve customer service and staff accountability. It could even provide analytics on where staff interventions are most needed.
+
+It’s a subscription-based model that can be scaled across multiple locations, making it highly valuable. And since such video cameras exist in almost all businesses (even small bakeries or shops), this kind of system can be marketed to all sorts of business owners.

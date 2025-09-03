@@ -7,7 +7,7 @@ Run: python -m videokurt.smoke_tests.pure_analysis.test_01_frame_diff
 
 import numpy as np
 import time
-from videokurt.analysis_models import FrameDiff
+from videokurt.raw_analysis.frame_diff import FrameDiff
 
 
 def create_test_frames(motion=True):

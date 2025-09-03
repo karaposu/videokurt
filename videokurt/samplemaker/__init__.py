@@ -27,7 +27,8 @@ from .motion import (
 
 from .sequences import (
     create_frame_sequence,
-    create_test_video_frames
+    create_test_video_frames,
+    create_frames_with_pattern
 )
 
 __all__ = [
@@ -50,5 +51,6 @@ __all__ = [
     'simulate_video_playback',
     # Sequences
     'create_frame_sequence',
-    'create_test_video_frames'
+    'create_test_video_frames',
+    'create_frames_with_pattern'
 ]

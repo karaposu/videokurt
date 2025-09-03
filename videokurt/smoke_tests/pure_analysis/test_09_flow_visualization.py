@@ -6,7 +6,7 @@ Run: python -m videokurt.smoke_tests.pure_analysis.test_09_flow_visualization
 """
 
 import numpy as np
-from videokurt.analysis_models import FlowHSVViz
+from videokurt.raw_analysis.flow_hsv_viz import FlowHSVViz
 from videokurt.smoke_tests.pure_analysis.test_utils import load_video_frames, get_video_segment
 
 

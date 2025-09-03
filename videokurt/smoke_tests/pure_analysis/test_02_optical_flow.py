@@ -6,7 +6,8 @@ Run: python -m videokurt.smoke_tests.pure_analysis.test_02_optical_flow
 """
 
 import numpy as np
-from videokurt.analysis_models import OpticalFlowDense, OpticalFlowSparse
+from videokurt.raw_analysis.optical_flow_dense import OpticalFlowDense
+from videokurt.raw_analysis.optical_flow_sparse import OpticalFlowSparse
 
 
 def create_moving_frames(direction='right'):

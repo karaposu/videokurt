@@ -6,7 +6,7 @@ Run: python -m videokurt.smoke_tests.pure_analysis.test_04_advanced_frame_diff
 """
 
 import numpy as np
-from videokurt.analysis_models import FrameDiffAdvanced
+from videokurt.raw_analysis.frame_diff_advanced import FrameDiffAdvanced
 
 
 def create_frames_with_varying_motion():
