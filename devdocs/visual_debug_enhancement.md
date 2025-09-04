@@ -28,24 +28,53 @@ vk.configure(frame_step=2, resolution_scale=0.5)
 # Analyze video
 results = vk.analyze('input_video.mp4')
 
-# Save with debug visualization
-vk.save_debug_video(
-    input_path='input_video.mp4',
+# Save with debug visualization - input path is in results
+results.save_debug_video(
     output_path='debug_output.mp4',
-    results=results,
     features=['scene_detection', 'binary_activity'],  # Which features to show
     style='text'  # Simple text overlay
 )
 ```
 
-### Advanced Usage - Custom Visualization
+### Advanced Usage - Custom Visualization (Current Capabilities)
 
 ```python
-# More control over visualization
-vk.save_debug_video(
-    input_path='input_video.mp4',
+# Using visual_debugger's actual annotation types
+from visual_debugger import AnnotationType
+
+results.save_debug_video(
     output_path='debug_output.mp4',
-    results=results,
+    visualizations=[
+        {
+            'type': AnnotationType.POINT_AND_LABEL,
+            'feature': 'scene_detection',
+            'coordinates': (50, 50),
+            'color': (0, 255, 0)
+        },
+        {
+            'type': AnnotationType.CIRCLE_AND_LABEL,
+            'feature': 'binary_activity',  # Shows as colored circle
+            'coordinates': (50, 100),
+            'radius': 20,
+            'thickness': -1,  # Filled
+            'color_active': (0, 255, 0),
+            'color_inactive': (128, 128, 128)
+        },
+        {
+            'type': AnnotationType.RECTANGLE,
+            'coordinates': (10, 150, 200, 100),  # Motion region
+            'color': (255, 255, 0)
+        }
+    ]
+)
+```
+
+### Future Vision - With Enhanced visual_debugger
+
+```python
+# This would require implementing enhancements from enhancement_proposal.md
+results.save_debug_video(
+    output_path='debug_output.mp4',
     visualizations=[
         {
             'type': 'text',
@@ -55,7 +84,7 @@ vk.save_debug_video(
             'font_scale': 0.7
         },
         {
-            'type': 'binary_bar',
+            'type': 'binary_bar',  # Would need to be added
             'feature': 'binary_activity',
             'position': 'bottom',
             'height': 30,
@@ -63,7 +92,7 @@ vk.save_debug_video(
             'inactive_color': (128, 128, 128)
         },
         {
-            'type': 'graph',
+            'type': 'graph',  # Would need to be added
             'data': results.analyses['frame_diff'].data['pixel_diff'],
             'position': 'top-right',
             'size': (200, 100),
@@ -207,49 +236,91 @@ Comprehensive status panel with multiple metrics.
 }
 ```
 
-## Implementation Details
+## Integration with visual_debugger Package
 
-### Main Method: save_debug_video
+The `visual_debugger` package (already available at `/Users/ns/Desktop/projects/visual_debugger`) provides excellent annotation capabilities that can be leveraged for VideoKurt's debug visualization. Key benefits:
+
+- **Pre-built annotation system** with points, labels, rectangles, circles, lines, masks
+- **Image concatenation** for creating comparison views
+- **Efficient OpenCV-based rendering**
+
+### Using visual_debugger for VideoKurt
 
 ```python
-def save_debug_video(
-    self,
-    input_path: Union[str, Path],
-    output_path: Union[str, Path],
-    results: RawAnalysisResults,
-    features: List[str] = None,
-    visualizations: List[dict] = None,
-    style: str = 'auto',
-    fps: float = None,
-    codec: str = 'mp4v',
-    frame_callback: Callable = None
-) -> bool:
-    """
-    Save video with debug visualizations overlaid.
+from visual_debugger import VisualDebugger, Annotation, AnnotationType
+
+class RawAnalysisResults:
+    def save_debug_video(self, output_path, features=None, style='auto'):
+        """Save video with debug annotations using visual_debugger."""
+        
+        # Initialize visual debugger (output='return' to get annotated frames)
+        vd = VisualDebugger(tag="videokurt", output='return', active=True)
+        
+        # Process each frame
+        cap = cv2.VideoCapture(self.filename)
+        annotated_frames = []
+        
+        for frame_idx in range(self.frame_count):
+            ret, frame = cap.read()
+            if not ret:
+                break
+                
+            # Create annotations based on features
+            annotations = self._create_annotations(frame_idx, features)
+            
+            # Apply annotations
+            annotated_frame = vd.visual_debug(frame, annotations)
+            annotated_frames.append(annotated_frame)
+        
+        # Save annotated video
+        VideoKurt.save_video(annotated_frames, output_path)
+```
+
+## Implementation Details
+
+### Main Method: save_debug_video (on RawAnalysisResults)
+
+```python
+class RawAnalysisResults:
+    # ... existing fields ...
+    filename: str  # Already stored from analyze()
     
-    Args:
-        input_path: Original video path
-        output_path: Output video path
-        results: Analysis results from analyze()
-        features: List of feature names to visualize (simple mode)
-        visualizations: List of visualization configs (advanced mode)
-        style: Visualization style ('text', 'dashboard', 'minimal', 'auto')
-        fps: Output FPS (None = same as input)
-        codec: Video codec
-        frame_callback: Optional callback for custom processing
+    def save_debug_video(
+        self,
+        output_path: Union[str, Path],
+        features: List[str] = None,
+        visualizations: List[dict] = None,
+        style: str = 'auto',
+        fps: float = None,
+        codec: str = 'mp4v',
+        frame_callback: Callable = None
+    ) -> bool:
+        """
+        Save video with debug visualizations overlaid.
         
-    Returns:
-        True if successful
-        
-    Examples:
-        # Simple text overlay
-        vk.save_debug_video('input.mp4', 'debug.mp4', results, 
-                           features=['scene_detection'])
-        
-        # Custom visualizations
-        vk.save_debug_video('input.mp4', 'debug.mp4', results,
-                           visualizations=[...])
-    """
+        Args:
+            output_path: Output video path
+            features: List of feature names to visualize (simple mode)
+            visualizations: List of visualization configs (advanced mode)
+            style: Visualization style ('text', 'dashboard', 'minimal', 'auto')
+            fps: Output FPS (None = same as input)
+            codec: Video codec
+            frame_callback: Optional callback for custom processing
+            
+        Returns:
+            True if successful
+            
+        Examples:
+            # Simple text overlay
+            results.save_debug_video('debug.mp4', 
+                                    features=['scene_detection'])
+            
+            # Custom visualizations
+            results.save_debug_video('debug.mp4',
+                                    visualizations=[...])
+        """
+        # Use self.filename as input video path
+        input_path = self.filename
 ```
 
 ### Preset Styles
@@ -258,23 +329,23 @@ For convenience, provide preset visualization styles:
 
 ```python
 # Minimal style - just essential info
-vk.save_debug_video(..., style='minimal')
+results.save_debug_video('output.mp4', style='minimal')
 # Shows: frame number, main feature state
 
 # Text style - all features as text
-vk.save_debug_video(..., style='text')  
+results.save_debug_video('output.mp4', style='text')  
 # Shows: all requested features as text overlays
 
 # Dashboard style - comprehensive view
-vk.save_debug_video(..., style='dashboard')
+results.save_debug_video('output.mp4', style='dashboard')
 # Shows: dashboard panel with graphs and metrics
 
 # Split style - side-by-side comparison
-vk.save_debug_video(..., style='split')
+results.save_debug_video('output.mp4', style='split')
 # Shows: original + analysis visualizations
 
 # Auto style - chooses based on features
-vk.save_debug_video(..., style='auto')
+results.save_debug_video('output.mp4', style='auto')
 # Automatically selects appropriate visualizations
 ```
 
@@ -293,8 +364,8 @@ def my_custom_visualizer(frame, frame_idx, results, config):
     return frame
 
 # Use custom visualizer
-vk.save_debug_video(
-    ...,
+results.save_debug_video(
+    'output.mp4',
     visualizations=[
         {'type': 'custom_viz', 'param1': 'value1'}
     ]
@@ -394,10 +465,8 @@ vk.add_feature('binary_activity')
 results = vk.analyze('screen_recording.mp4')
 
 # Save with activity indicator
-vk.save_debug_video(
-    'screen_recording.mp4',
+results.save_debug_video(
     'activity_debug.mp4',
-    results,
     features=['binary_activity'],
     style='minimal'
 )
@@ -414,10 +483,8 @@ vk.add_feature('camera_movement')
 results = vk.analyze('movie_clip.mp4')
 
 # Save with detailed visualizations
-vk.save_debug_video(
-    'movie_clip.mp4',
+results.save_debug_video(
     'scene_analysis.mp4',
-    results,
     visualizations=[
         {
             'type': 'scene_marker',
@@ -448,10 +515,8 @@ vk.add_feature('scroll_detection')
 results = vk.analyze('ui_test_recording.mp4')
 
 # Save with UI change highlights
-vk.save_debug_video(
-    'ui_test_recording.mp4',
+results.save_debug_video(
     'ui_test_debug.mp4',
-    results,
     visualizations=[
         {
             'type': 'change_highlights',
@@ -485,10 +550,8 @@ vk.add_analysis('background_mog2')
 results = vk.analyze('security_footage.mp4')
 
 # Save with motion visualizations
-vk.save_debug_video(
-    'security_footage.mp4',
+results.save_debug_video(
     'motion_debug.mp4',
-    results,
     visualizations=[
         {
             'type': 'heatmap',
@@ -521,31 +584,30 @@ vk.visualize('input.mp4', results)
 ### 2. Declarative Configuration
 ```python
 debug_config = {
-    'input': 'input.mp4',
-    'output': 'debug.mp4',
+    'output_path': 'debug.mp4',
     'visualizations': {
         'text': ['scene_detection', 'binary_activity'],
         'graphs': ['frame_diff'],
         'heatmaps': ['motion_heatmap']
     }
 }
-vk.save_debug_video(**debug_config)
+results.save_debug_video(**debug_config)
 ```
 
 ### 3. Template-Based
 ```python
 # Use predefined templates
-vk.save_debug_video(
-    'input.mp4', 'debug.mp4', results,
+results.save_debug_video(
+    'debug.mp4',
     template='motion_analysis'  # Predefined visualization set
 )
 
 # Or create custom template
-vk.register_template('my_template', [
+VideoKurt.register_template('my_template', [
     {'type': 'text', 'feature': 'scene_detection'},
     {'type': 'graph', 'data': 'frame_diff'}
 ])
-vk.save_debug_video(..., template='my_template')
+results.save_debug_video('output.mp4', template='my_template')
 ```
 
 ## Implementation Priority
@@ -595,12 +657,145 @@ vk.save_debug_video(..., template='my_template')
    - Stream processing vs full load?
    - Temporary file usage?
 
+## Mapping VideoKurt Features to visual_debugger Annotations
+
+### Example Implementation
+
+```python
+def _create_annotations_for_frame(self, frame_idx, features):
+    """Create visual_debugger annotations for a specific frame."""
+    from visual_debugger import Annotation, AnnotationType
+    
+    annotations = []
+    
+    # Scene detection - show scene boundaries
+    if 'scene_detection' in features and 'scene_detection' in self.features:
+        scene_data = self.features['scene_detection']
+        if frame_idx in scene_data.scene_changes:
+            annotations.append(
+                Annotation(
+                    type=AnnotationType.RECTANGLE,
+                    coordinates=(10, 10, 200, 50),
+                    color=(0, 255, 0),
+                )
+            )
+            annotations.append(
+                Annotation(
+                    type=AnnotationType.POINT_AND_LABEL,
+                    coordinates=(110, 35),
+                    labels=f"Scene Change #{scene_data.scene_id[frame_idx]}",
+                    color=(0, 255, 0)
+                )
+            )
+    
+    # Binary activity - show activity indicator
+    if 'binary_activity' in features and 'binary_activity' in self.features:
+        activity = self.features['binary_activity'].is_active[frame_idx]
+        color = (0, 255, 0) if activity else (128, 128, 128)
+        annotations.append(
+            Annotation(
+                type=AnnotationType.CIRCLE_AND_LABEL,
+                coordinates=(50, 100),
+                radius=20,
+                thickness=-1,  # Filled circle
+                labels="Active" if activity else "Inactive",
+                color=color
+            )
+        )
+    
+    # Motion regions - draw rectangles around motion
+    if 'motion_regions' in features and 'contour_detection' in self.analyses:
+        contours = self.analyses['contour_detection'].data['contours'][frame_idx]
+        for contour in contours[:5]:  # Show top 5 contours
+            x, y, w, h = cv2.boundingRect(contour)
+            annotations.append(
+                Annotation(
+                    type=AnnotationType.RECTANGLE,
+                    coordinates=(x, y, w, h),
+                    color=(255, 0, 0)
+                )
+            )
+    
+    # Optical flow - show motion vectors
+    if 'motion_vectors' in features and 'optical_flow_sparse' in self.analyses:
+        points = self.analyses['optical_flow_sparse'].data['tracked_points'][frame_idx]
+        for pt in points[:20]:  # Show up to 20 points
+            annotations.append(
+                Annotation(
+                    type=AnnotationType.POINT,
+                    coordinates=tuple(pt.astype(int)),
+                    color=(255, 255, 0)
+                )
+            )
+    
+    # Frame info - always show
+    annotations.append(
+        Annotation(
+            type=AnnotationType.POINT_AND_LABEL,
+            coordinates=(10, 30),
+            labels=f"Frame {frame_idx}/{self.frame_count}",
+            color=(255, 255, 255)
+        )
+    )
+    
+    return annotations
+```
+
+### Simplified Usage Example
+
+```python
+# Analyze video
+vk = VideoKurt()
+vk.add_analysis('frame_diff')
+vk.add_analysis('contour_detection')
+vk.add_feature('scene_detection')
+vk.add_feature('binary_activity')
+results = vk.analyze('video.mp4')
+
+# Save with visual debugging using visual_debugger
+results.save_debug_video(
+    'debug.mp4',
+    features=['scene_detection', 'binary_activity', 'motion_regions']
+)
+```
+
+## Advantages of Using visual_debugger
+
+1. **No need to reimplement** - Annotation drawing is already handled
+2. **Consistent API** - Use Annotation dataclasses
+3. **Proven code** - Already tested and working
+4. **Easy to extend** - Just add new annotation mappings
+5. **Performance** - Optimized OpenCV operations
+
+## Implementation Priority with visual_debugger
+
+### Phase 1: Basic Integration (Quick Win)
+- Import visual_debugger
+- Map 2-3 basic features to annotations (text labels, activity indicators)
+- Test with simple videos
+
+### Phase 2: Feature Mappings
+- Map all VideoKurt features to appropriate annotations
+- Add configuration for annotation styles
+- Support feature-specific visualizations
+
+### Phase 3: Advanced Visualizations
+- Use visual_debugger's mask overlay for heatmaps
+- Implement side-by-side comparisons
+- Add concat_images for multi-analysis views
+
 ## Conclusion
 
-The visual debug interface should be:
-- **Simple by default**: `save_debug_video(input, output, results, features=['scene_detection'])`
-- **Powerful when needed**: Full control over visualization types and styles
-- **Extensible**: Easy to add new visualization types
-- **Performant**: Shouldn't significantly slow down the workflow
+By leveraging the existing `visual_debugger` package:
+- **Faster implementation**: Reuse proven annotation code
+- **Cleaner design**: Focus on feature-to-annotation mapping
+- **Better maintainability**: Separate concerns between analysis and visualization
+- **Immediate value**: Can start using it right away
+
+The visual debug interface becomes:
+- **Simple by default**: `results.save_debug_video('output.mp4', features=['scene_detection'])`
+- **Powerful when needed**: Full control via custom annotations
+- **Extensible**: Easy to add new feature mappings
+- **Performant**: Leverages optimized visual_debugger code
 
 This design provides both ease of use for common cases and flexibility for advanced debugging needs.

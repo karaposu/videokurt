@@ -1,9 +1,45 @@
 """VideoKurt raw analysis results models."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, Tuple
 import json
 import numpy as np
+
+
+@dataclass
+class FeatureResult:
+    """Container for computed feature data.
+    
+    Provides a standardized way to store feature outputs along with
+    their metadata, computation details, and dependencies.
+    """
+    # Feature identification
+    name: str  # Feature name (e.g., 'binary_activity')
+    
+    # Feature output
+    data: Any  # The actual feature data (np.array, dict, list, etc.)
+    
+    # Metadata
+    metadata: Dict[str, Any]  # Parameters used for computation
+    dtype: str  # Description of data type (e.g., 'binary_array', 'event_list')
+    
+    # Optional shape info for arrays
+    shape: Optional[tuple] = None
+    
+    # Computation details
+    compute_time: float = 0.0
+    required_analyses: List[str] = field(default_factory=list)
+    
+    # Optional fields
+    memory_usage: Optional[int] = None  # Bytes used
+    
+    def __repr__(self):
+        return f"FeatureResult({self.name}, shape={self.shape})"
+    
+    @property
+    def is_valid(self) -> bool:
+        """Check if feature result contains valid data."""
+        return self.data is not None
 
 
 @dataclass
