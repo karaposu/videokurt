@@ -7,10 +7,10 @@ from scipy.spatial.distance import cosine, euclidean
 from scipy.ndimage import label, gaussian_filter
 import cv2
 
-from ..base import AdvancedFeature
+from ..base import BaseFeature
 
 
-class AppWindowSwitching(AdvancedFeature):
+class AppWindowSwitching(BaseFeature):
     """Detect app/window switching using visual signatures and transition patterns."""
     
     FEATURE_NAME = 'app_window_switching'
@@ -40,7 +40,7 @@ class AppWindowSwitching(AdvancedFeature):
         self.signature_components = signature_components
         self.use_perceptual_hash = use_perceptual_hash
     
-    def _compute_advanced(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Detect app/window switching using multiple visual cues.
         
         Returns:
@@ -48,8 +48,8 @@ class AppWindowSwitching(AdvancedFeature):
         """
         frame_diffs = analysis_data['frame_diff'].data['pixel_diff']
         edge_maps = analysis_data['edge_canny'].data['edge_map']
-        color_hists = analysis_data['color_histogram'].data['histogram']
-        dct_coeffs = analysis_data['dct_transform'].data['coefficients']
+        color_hists = analysis_data['color_histogram'].data['histograms']
+        dct_coeffs = analysis_data['dct_transform'].data['dct_coefficients']
         
         if len(edge_maps) == 0:
             return self._empty_result()
@@ -214,13 +214,13 @@ class AppWindowSwitching(AdvancedFeature):
         
         # Add color statistics
         dominant_colors = signal.find_peaks(hist, height=0.05)[0]
-        stats = [
+        color_stats = [
             len(dominant_colors) / len(hist),  # Color diversity
             np.max(hist),  # Peak color strength
             stats.entropy(hist + 1e-10),  # Color entropy
         ]
         
-        return np.concatenate([reduced, stats])
+        return np.concatenate([reduced, color_stats])
     
     def _compute_dct_signature(self, dct_coeffs: Optional[np.ndarray]) -> np.ndarray:
         """Compute DCT-based frequency signature."""

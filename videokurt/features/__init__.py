@@ -6,7 +6,7 @@ Provides three levels of features:
 - Advanced: Complex visual pattern detection
 """
 
-from .base import BaseFeature, BasicFeature, MiddleFeature, AdvancedFeature
+from .base import BaseFeature
 from .basic import BASIC_FEATURES
 from .middle import MIDDLE_FEATURES
 from .advanced import ADVANCED_FEATURES
@@ -27,9 +27,6 @@ FEATURES_BY_LEVEL = {
 
 __all__ = [
     'BaseFeature',
-    'BasicFeature',
-    'MiddleFeature',
-    'AdvancedFeature',
     'BASIC_FEATURES',
     'MIDDLE_FEATURES',
     'ADVANCED_FEATURES',

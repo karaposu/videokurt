@@ -9,10 +9,10 @@ from scipy.cluster.hierarchy import linkage, fcluster
 from sklearn.decomposition import PCA
 import warnings
 
-from ..base import AdvancedFeature
+from ..base import BaseFeature
 
 
-class MotionCoherencePatterns(AdvancedFeature):
+class MotionCoherencePatterns(BaseFeature):
     """Analyze motion coherence patterns using flow field segmentation and clustering."""
     
     FEATURE_NAME = 'motion_coherence_patterns'
@@ -45,7 +45,7 @@ class MotionCoherencePatterns(AdvancedFeature):
         self.use_hierarchical_analysis = use_hierarchical_analysis
         self.motion_significance_threshold = motion_significance_threshold
     
-    def _compute_advanced(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Analyze motion coherence patterns using comprehensive methods.
         
         Returns:

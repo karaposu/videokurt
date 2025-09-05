@@ -7,10 +7,10 @@ from scipy.ndimage import gaussian_filter, median_filter
 from scipy.spatial import distance
 import cv2
 
-from ..base import AdvancedFeature
+from ..base import BaseFeature
 
 
-class ShotTypeDetection(AdvancedFeature):
+class ShotTypeDetection(BaseFeature):
     """Detect camera shot types and cinematographic techniques."""
     
     FEATURE_NAME = 'shot_type_detection'
@@ -40,7 +40,7 @@ class ShotTypeDetection(AdvancedFeature):
         self.shot_min_duration = shot_min_duration
         self.use_composition_analysis = use_composition_analysis
     
-    def _compute_advanced(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Detect shot types using comprehensive motion and composition analysis.
         
         Returns:

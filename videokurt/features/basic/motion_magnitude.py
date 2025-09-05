@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any
 
-from ..base import BasicFeature
+from ..base import BaseFeature
 
 
-class MotionMagnitude(BasicFeature):
+class MotionMagnitude(BaseFeature):
     """Compute total motion magnitude per frame from optical flow."""
     
     FEATURE_NAME = 'motion_magnitude'
@@ -20,12 +20,14 @@ class MotionMagnitude(BasicFeature):
         super().__init__()
         self.normalize = normalize
     
-    def _compute_basic(self, analysis_data: Dict[str, Any]) -> np.ndarray:
+    def compute(self, analysis_data: Dict[str, Any]) -> np.ndarray:
         """Compute motion magnitude from optical flow.
         
         Returns:
             Array of scalar motion magnitudes per frame
         """
+        self.validate_inputs(analysis_data)
+        
         # Get optical flow data
         flow_analysis = analysis_data['optical_flow_dense']
         flow_field = flow_analysis.data['flow_field']

@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any
 
-from ..base import BasicFeature
+from ..base import BaseFeature
 
 
-class RepetitionIndicator(BasicFeature):
+class RepetitionIndicator(BaseFeature):
     """Detect repetitive patterns using FFT analysis."""
     
     FEATURE_NAME = 'repetition_indicator'
@@ -20,12 +20,14 @@ class RepetitionIndicator(BasicFeature):
         super().__init__()
         self.peak_threshold = peak_threshold
     
-    def _compute_basic(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Detect repetitive patterns from frequency spectrum.
         
         Returns:
             Dict with repetition score and dominant frequencies
         """
+        self.validate_inputs(analysis_data)
+        
         fft_analysis = analysis_data['frequency_fft']
         freq_spectrum = fft_analysis.data['frequency_spectrum']
         

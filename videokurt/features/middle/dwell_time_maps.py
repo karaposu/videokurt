@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any, List
 
-from ..base import MiddleFeature
+from ..base import BaseFeature
 
 
-class DwellTimeMaps(MiddleFeature):
+class DwellTimeMaps(BaseFeature):
     """Create maps showing duration of activity at each location."""
     
     FEATURE_NAME = 'dwell_time_maps'
@@ -22,12 +22,14 @@ class DwellTimeMaps(MiddleFeature):
         self.activity_threshold = activity_threshold
         self.decay_factor = decay_factor
     
-    def _compute_middle(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Compute dwell time maps from activity data.
         
         Returns:
             Dict with dwell maps and statistics
         """
+        self.validate_inputs(analysis_data)
+        
         # Use motion_heatmap if available, otherwise frame_diff
         if 'motion_heatmap' in analysis_data:
             heatmap_data = analysis_data['motion_heatmap'].data
@@ -84,6 +86,7 @@ class DwellTimeMaps(MiddleFeature):
     
     def _extract_dwell_zones(self, dwell_map: np.ndarray, top_k: int = 5) -> List[Dict]:
         """Extract top zones with highest dwell times."""
+        
         from scipy import ndimage
         
         # Threshold to get significant dwell areas

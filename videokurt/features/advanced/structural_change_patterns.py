@@ -10,10 +10,10 @@ from sklearn.decomposition import PCA
 import cv2
 import warnings
 
-from ..base import AdvancedFeature
+from ..base import BaseFeature
 
 
-class StructuralChangePatterns(AdvancedFeature):
+class StructuralChangePatterns(BaseFeature):
     """Detect and analyze patterns in structural changes using comprehensive edge analysis."""
     
     FEATURE_NAME = 'structural_change_patterns'
@@ -46,7 +46,7 @@ class StructuralChangePatterns(AdvancedFeature):
         self.use_multi_scale = use_multi_scale
         self.persistence_threshold = persistence_threshold
     
-    def _compute_advanced(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Detect structural change patterns using comprehensive analysis.
         
         Returns:
@@ -55,7 +55,7 @@ class StructuralChangePatterns(AdvancedFeature):
         edge_maps = analysis_data['edge_canny'].data['edge_map']
         frame_diffs = analysis_data['frame_diff'].data['pixel_diff']
         contours = analysis_data['contour_detection'].data.get('contours', [])
-        color_hists = analysis_data['color_histogram'].data['histogram']
+        color_hists = analysis_data['color_histogram'].data['histograms']
         
         if len(edge_maps) == 0:
             return self._empty_result()

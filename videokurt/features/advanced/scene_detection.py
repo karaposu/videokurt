@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any, List, Tuple
 
-from ..base import AdvancedFeature
+from ..base import BaseFeature
 
 
-class SceneDetection(AdvancedFeature):
+class SceneDetection(BaseFeature):
     """Detect scene boundaries (cuts, fades, transitions) from multiple features."""
     
     FEATURE_NAME = 'scene_detection'
@@ -26,7 +26,7 @@ class SceneDetection(AdvancedFeature):
         self.fade_threshold = fade_threshold
         self.min_scene_length = min_scene_length
     
-    def _compute_advanced(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Detect scene boundaries using multiple visual patterns.
         
         Returns:
@@ -101,8 +101,12 @@ class SceneDetection(AdvancedFeature):
         """Detect hard cuts based on sudden changes."""
         cuts = []
         
-        # Combine frame and edge changes
-        combined_changes = (frame_changes[:-1] + edge_changes) / 2 if len(edge_changes) > 0 else frame_changes
+        # Combine frame and edge changes (handle potential length mismatch)
+        if len(edge_changes) > 0:
+            min_len = min(len(frame_changes), len(edge_changes))
+            combined_changes = (frame_changes[:min_len] + edge_changes[:min_len]) / 2
+        else:
+            combined_changes = frame_changes
         
         # Find peaks above threshold
         for i, change in enumerate(combined_changes):

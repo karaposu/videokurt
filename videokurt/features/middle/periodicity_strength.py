@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any
 
-from ..base import MiddleFeature
+from ..base import BaseFeature
 
 
-class PeriodicityStrength(MiddleFeature):
+class PeriodicityStrength(BaseFeature):
     """Measure strength and characteristics of periodic patterns."""
     
     FEATURE_NAME = 'periodicity_strength'
@@ -22,12 +22,14 @@ class PeriodicityStrength(MiddleFeature):
         self.min_frequency = min_frequency
         self.max_frequency = max_frequency
     
-    def _compute_middle(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Analyze periodicity strength from FFT data.
         
         Returns:
             Dict with periodicity metrics and dominant frequencies
         """
+        self.validate_inputs(analysis_data)
+        
         fft_analysis = analysis_data['frequency_fft']
         freq_spectrum = fft_analysis.data['frequency_spectrum']
         
@@ -113,6 +115,7 @@ class PeriodicityStrength(MiddleFeature):
     
     def _find_peaks(self, spectrum: np.ndarray, prominence: float = 0.2) -> np.ndarray:
         """Find peaks in frequency spectrum."""
+        
         peaks = []
         
         for i in range(1, len(spectrum) - 1):

@@ -4,10 +4,10 @@ import numpy as np
 import cv2
 from typing import Dict, Any, List
 
-from ..base import MiddleFeature
+from ..base import BaseFeature
 
 
-class BlobStability(MiddleFeature):
+class BlobStability(BaseFeature):
     """Measure blob persistence over time."""
     
     FEATURE_NAME = 'blob_stability'
@@ -23,12 +23,14 @@ class BlobStability(MiddleFeature):
         self.min_persistence = min_persistence
         self.min_area = min_area
     
-    def _compute_middle(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Track blob persistence and stability.
         
         Returns:
             Dict with persistence scores and stable blob info
         """
+        self.validate_inputs(analysis_data)
+        
         bg_analysis = analysis_data['background_mog2']
         foreground_masks = bg_analysis.data['foreground_mask']
         

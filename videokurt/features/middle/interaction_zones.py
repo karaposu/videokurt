@@ -4,10 +4,10 @@ import numpy as np
 import cv2
 from typing import Dict, Any, List, Tuple
 
-from ..base import MiddleFeature
+from ..base import BaseFeature
 
 
-class InteractionZones(MiddleFeature):
+class InteractionZones(BaseFeature):
     """Detect zones where blobs interact or overlap."""
     
     FEATURE_NAME = 'interaction_zones'
@@ -23,12 +23,14 @@ class InteractionZones(MiddleFeature):
         self.min_overlap = min_overlap
         self.min_area = min_area
     
-    def _compute_middle(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Detect blob interactions and overlap zones.
         
         Returns:
             Dict with interaction events and zones
         """
+        self.validate_inputs(analysis_data)
+        
         bg_analysis = analysis_data['background_mog2']
         foreground_masks = bg_analysis.data['foreground_mask']
         
@@ -97,6 +99,7 @@ class InteractionZones(MiddleFeature):
     
     def _check_interaction(self, blob1: Dict, blob2: Dict) -> Dict:
         """Check if two blobs interact."""
+        
         # Calculate overlap
         overlap_mask = blob1['mask'] & blob2['mask']
         overlap_area = np.sum(overlap_mask)

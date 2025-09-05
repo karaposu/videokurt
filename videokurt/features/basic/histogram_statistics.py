@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any
 
-from ..base import BasicFeature
+from ..base import BaseFeature
 
 
-class HistogramStatistics(BasicFeature):
+class HistogramStatistics(BaseFeature):
     """Compute statistics from color histograms."""
     
     FEATURE_NAME = 'histogram_statistics'
@@ -20,12 +20,14 @@ class HistogramStatistics(BasicFeature):
         super().__init__()
         self.compute_spread = compute_spread
     
-    def _compute_basic(self, analysis_data: Dict[str, Any]) -> Dict[str, np.ndarray]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, np.ndarray]:
         """Compute histogram statistics.
         
         Returns:
             Dict with mean, peak, and optionally spread
         """
+        self.validate_inputs(analysis_data)
+        
         histogram_analysis = analysis_data['color_histogram']
         histograms = histogram_analysis.data['histograms']
         

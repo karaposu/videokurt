@@ -4,10 +4,10 @@ import numpy as np
 import cv2
 from typing import Dict, Any, List, Tuple
 
-from ..base import BasicFeature
+from ..base import BaseFeature
 
 
-class ChangeRegions(BasicFeature):
+class ChangeRegions(BaseFeature):
     """Detect bounding boxes of changed regions."""
     
     FEATURE_NAME = 'change_regions'
@@ -23,12 +23,14 @@ class ChangeRegions(BasicFeature):
         self.threshold = threshold
         self.min_area = min_area
     
-    def _compute_basic(self, analysis_data: Dict[str, Any]) -> List[List[Tuple]]:
+    def compute(self, analysis_data: Dict[str, Any]) -> List[List[Tuple]]:
         """Compute bounding boxes of changed regions.
         
         Returns:
             List of bounding boxes per frame [(x, y, w, h), ...]
         """
+        self.validate_inputs(analysis_data)
+        
         frame_diff_analysis = analysis_data['frame_diff']
         pixel_diffs = frame_diff_analysis.data['pixel_diff']
         

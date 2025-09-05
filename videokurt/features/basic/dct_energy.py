@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any
 
-from ..base import BasicFeature
+from ..base import BaseFeature
 
 
-class DCTEnergy(BasicFeature):
+class DCTEnergy(BaseFeature):
     """Compute energy from DCT coefficients."""
     
     FEATURE_NAME = 'dct_energy'
@@ -20,12 +20,14 @@ class DCTEnergy(BasicFeature):
         super().__init__()
         self.num_coeffs = num_coeffs
     
-    def _compute_basic(self, analysis_data: Dict[str, Any]) -> np.ndarray:
+    def compute(self, analysis_data: Dict[str, Any]) -> np.ndarray:
         """Compute energy from DCT coefficients.
         
         Returns:
             Array of DCT energy values per frame
         """
+        self.validate_inputs(analysis_data)
+        
         dct_analysis = analysis_data['dct_transform']
         dct_coeffs = dct_analysis.data['dct_coefficients']
         

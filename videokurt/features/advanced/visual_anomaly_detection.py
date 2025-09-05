@@ -9,10 +9,10 @@ from sklearn.decomposition import PCA
 from sklearn.covariance import EllipticEnvelope
 import warnings
 
-from ..base import AdvancedFeature
+from ..base import BaseFeature
 
 
-class VisualAnomalyDetection(AdvancedFeature):
+class VisualAnomalyDetection(BaseFeature):
     """Detect visual anomalies using statistical outlier detection and pattern analysis."""
     
     FEATURE_NAME = 'visual_anomaly_detection'
@@ -46,7 +46,7 @@ class VisualAnomalyDetection(AdvancedFeature):
         self.anomaly_persistence = anomaly_persistence
         self.feature_dimensions = feature_dimensions
     
-    def _compute_advanced(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Detect visual anomalies using comprehensive statistical analysis.
         
         Returns:
@@ -55,7 +55,7 @@ class VisualAnomalyDetection(AdvancedFeature):
         frame_diffs = analysis_data['frame_diff'].data['pixel_diff']
         flow_field = analysis_data['optical_flow_dense'].data['flow_field']
         edge_maps = analysis_data['edge_canny'].data['edge_map']
-        color_hists = analysis_data['color_histogram'].data['histogram']
+        color_hists = analysis_data['color_histogram'].data['histograms']
         freq_data = analysis_data['frequency_fft'].data
         
         if len(frame_diffs) == 0:

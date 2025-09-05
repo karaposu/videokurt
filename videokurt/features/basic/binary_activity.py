@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any
 
-from ..base import BasicFeature
+from ..base import BaseFeature
 
 
-class BinaryActivity(BasicFeature):
+class BinaryActivity(BaseFeature):
     """Convert frame differences to binary activity timeline."""
     
     FEATURE_NAME = 'binary_activity'
@@ -22,12 +22,14 @@ class BinaryActivity(BasicFeature):
         self.threshold = threshold
         self.activity_threshold = activity_threshold
     
-    def _compute_basic(self, analysis_data: Dict[str, Any]) -> np.ndarray:
+    def compute(self, analysis_data: Dict[str, Any]) -> np.ndarray:
         """Compute binary activity from frame differences.
         
         Returns:
             Binary array where 1 = active, 0 = inactive
         """
+        self.validate_inputs(analysis_data)
+        
         # Get frame difference data
         frame_diff_analysis = analysis_data['frame_diff']
         pixel_diffs = frame_diff_analysis.data['pixel_diff']

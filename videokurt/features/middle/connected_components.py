@@ -4,10 +4,10 @@ import numpy as np
 import cv2
 from typing import Dict, Any, List
 
-from ..base import MiddleFeature
+from ..base import BaseFeature
 
 
-class ConnectedComponents(MiddleFeature):
+class ConnectedComponents(BaseFeature):
     """Analyze connected components in binary masks."""
     
     FEATURE_NAME = 'connected_components'
@@ -23,12 +23,14 @@ class ConnectedComponents(MiddleFeature):
         self.min_area = min_area
         self.max_components = max_components
     
-    def _compute_middle(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Analyze connected components.
         
         Returns:
             Dict with component statistics and properties
         """
+        self.validate_inputs(analysis_data)
+        
         # Get binary masks
         if 'background_mog2' in analysis_data:
             masks = analysis_data['background_mog2'].data['foreground_mask']
@@ -96,6 +98,7 @@ class ConnectedComponents(MiddleFeature):
     def _find_stable_components(self, component_data: List[Dict], 
                                min_frames: int = 5) -> List[Dict]:
         """Find components that persist across frames."""
+        
         if len(component_data) < min_frames:
             return []
         
@@ -123,15 +126,14 @@ class ConnectedComponents(MiddleFeature):
                 
                 if matched_id is not None:
                     current_tracked[matched_id] = centroid
-                    if matched_id in stable:
-                        stable[matched_id]['frames'] += 1
-                        stable[matched_id]['avg_area'] += component['area']
-                    else:
+                    if matched_id not in stable:
                         stable[matched_id] = {
                             'id': matched_id,
-                            'frames': 1,
-                            'avg_area': component['area']
+                            'frames': 0,
+                            'avg_area': 0
                         }
+                    stable[matched_id]['frames'] += 1
+                    stable[matched_id]['avg_area'] += component['area']
                 else:
                     # New component
                     current_tracked[next_id] = centroid

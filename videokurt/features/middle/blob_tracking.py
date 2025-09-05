@@ -4,10 +4,10 @@ import numpy as np
 import cv2
 from typing import Dict, Any, List, Tuple
 
-from ..base import MiddleFeature
+from ..base import BaseFeature
 
 
-class BlobTracking(MiddleFeature):
+class BlobTracking(BaseFeature):
     """Extract and track blobs from foreground masks."""
     
     FEATURE_NAME = 'blob_tracking'
@@ -23,12 +23,14 @@ class BlobTracking(MiddleFeature):
         self.min_area = min_area
         self.max_area = max_area
     
-    def _compute_middle(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Extract blob properties and simple tracking.
         
         Returns:
             Dict with blob counts, sizes, positions per frame
         """
+        self.validate_inputs(analysis_data)
+        
         # Get foreground masks
         bg_analysis = analysis_data['background_mog2']
         foreground_masks = bg_analysis.data['foreground_mask']

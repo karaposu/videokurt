@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any, List
 
-from ..base import MiddleFeature
+from ..base import BaseFeature
 
 
-class ActivityBursts(MiddleFeature):
+class ActivityBursts(BaseFeature):
     """Detect periods of high activity followed by low activity."""
     
     FEATURE_NAME = 'activity_bursts'
@@ -26,12 +26,14 @@ class ActivityBursts(MiddleFeature):
         self.min_burst_length = min_burst_length
         self.smoothing_window = smoothing_window
     
-    def _compute_middle(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Detect activity bursts from frame differences.
         
         Returns:
             Dict with burst events and statistics
         """
+        self.validate_inputs(analysis_data)
+        
         frame_diff_data = analysis_data['frame_diff'].data['pixel_diff']
         
         # Compute activity level per frame

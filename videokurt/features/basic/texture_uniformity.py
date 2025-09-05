@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any
 
-from ..base import BasicFeature
+from ..base import BaseFeature
 
 
-class TextureUniformity(BasicFeature):
+class TextureUniformity(BaseFeature):
     """Compute texture uniformity score from texture analysis."""
     
     FEATURE_NAME = 'texture_uniformity'
@@ -20,12 +20,14 @@ class TextureUniformity(BasicFeature):
         super().__init__()
         self.window_size = window_size
     
-    def _compute_basic(self, analysis_data: Dict[str, Any]) -> np.ndarray:
+    def compute(self, analysis_data: Dict[str, Any]) -> np.ndarray:
         """Compute texture uniformity scores.
         
         Returns:
             Array of uniformity scores (0=textured, 1=uniform) per frame
         """
+        self.validate_inputs(analysis_data)
+        
         texture_analysis = analysis_data['texture_descriptors']
         texture_maps = texture_analysis.data['texture_features']
         

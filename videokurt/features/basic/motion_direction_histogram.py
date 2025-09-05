@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any
 
-from ..base import BasicFeature
+from ..base import BaseFeature
 
 
-class MotionDirectionHistogram(BasicFeature):
+class MotionDirectionHistogram(BaseFeature):
     """Compute histogram of motion directions from optical flow."""
     
     FEATURE_NAME = 'motion_direction_histogram'
@@ -22,12 +22,14 @@ class MotionDirectionHistogram(BasicFeature):
         self.num_bins = num_bins
         self.magnitude_threshold = magnitude_threshold
     
-    def _compute_basic(self, analysis_data: Dict[str, Any]) -> np.ndarray:
+    def compute(self, analysis_data: Dict[str, Any]) -> np.ndarray:
         """Compute histogram of motion directions.
         
         Returns:
             Array of histograms (num_frames, num_bins)
         """
+        self.validate_inputs(analysis_data)
+        
         flow_analysis = analysis_data['optical_flow_dense']
         flow_field = flow_analysis.data['flow_field']
         

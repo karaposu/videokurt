@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any
 
-from ..base import BasicFeature
+from ..base import BaseFeature
 
 
-class DominantFlowVector(BasicFeature):
+class DominantFlowVector(BaseFeature):
     """Extract single dominant motion vector per frame."""
     
     FEATURE_NAME = 'dominant_flow_vector'
@@ -20,12 +20,14 @@ class DominantFlowVector(BasicFeature):
         super().__init__()
         self.use_median = use_median
     
-    def _compute_basic(self, analysis_data: Dict[str, Any]) -> np.ndarray:
+    def compute(self, analysis_data: Dict[str, Any]) -> np.ndarray:
         """Extract dominant flow vector from optical flow field.
         
         Returns:
             Array of dominant vectors (num_frames, 2) for [x, y]
         """
+        self.validate_inputs(analysis_data)
+        
         flow_analysis = analysis_data['optical_flow_dense']
         flow_field = flow_analysis.data['flow_field']
         

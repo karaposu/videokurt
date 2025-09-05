@@ -8,10 +8,10 @@ from scipy.optimize import curve_fit
 from sklearn.decomposition import PCA
 import warnings
 
-from ..base import AdvancedFeature
+from ..base import BaseFeature
 
 
-class MotionPatternClassification(AdvancedFeature):
+class MotionPatternClassification(BaseFeature):
     """Classify complex motion patterns using trajectory and flow analysis."""
     
     FEATURE_NAME = 'motion_pattern_classification'
@@ -41,7 +41,7 @@ class MotionPatternClassification(AdvancedFeature):
         self.temporal_smoothing = temporal_smoothing
         self.use_fourier_analysis = use_fourier_analysis
     
-    def _compute_advanced(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Classify motion patterns using multi-scale analysis.
         
         Returns:

@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any
 
-from ..base import BasicFeature
+from ..base import BaseFeature
 
 
-class ForegroundRatio(BasicFeature):
+class ForegroundRatio(BaseFeature):
     """Compute percentage of foreground pixels per frame."""
     
     FEATURE_NAME = 'foreground_ratio'
@@ -20,12 +20,14 @@ class ForegroundRatio(BasicFeature):
         super().__init__()
         self.min_value = min_value
     
-    def _compute_basic(self, analysis_data: Dict[str, Any]) -> np.ndarray:
+    def compute(self, analysis_data: Dict[str, Any]) -> np.ndarray:
         """Compute foreground ratio from background subtraction.
         
         Returns:
             Array of foreground ratios (0-1) per frame
         """
+        self.validate_inputs(analysis_data)
+        
         # Try MOG2 first, then KNN
         if 'background_mog2' in analysis_data:
             bg_analysis = analysis_data['background_mog2']

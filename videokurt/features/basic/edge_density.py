@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any
 
-from ..base import BasicFeature
+from ..base import BaseFeature
 
 
-class EdgeDensity(BasicFeature):
+class EdgeDensity(BaseFeature):
     """Compute percentage of edge pixels per frame."""
     
     FEATURE_NAME = 'edge_density'
@@ -20,12 +20,14 @@ class EdgeDensity(BasicFeature):
         super().__init__()
         self.use_gradient = use_gradient
     
-    def _compute_basic(self, analysis_data: Dict[str, Any]) -> np.ndarray:
+    def compute(self, analysis_data: Dict[str, Any]) -> np.ndarray:
         """Compute edge density from edge detection.
         
         Returns:
             Array of edge density values (0-1) per frame
         """
+        self.validate_inputs(analysis_data)
+        
         # Get edge data
         edge_analysis = analysis_data['edge_canny']
         

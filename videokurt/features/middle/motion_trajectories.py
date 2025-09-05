@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any, List, Tuple
 
-from ..base import MiddleFeature
+from ..base import BaseFeature
 
 
-class MotionTrajectories(MiddleFeature):
+class MotionTrajectories(BaseFeature):
     """Extract and analyze motion trajectories from flow fields."""
     
     FEATURE_NAME = 'motion_trajectories'
@@ -23,12 +23,14 @@ class MotionTrajectories(MiddleFeature):
         self.min_trajectory_length = min_trajectory_length
         self.max_trajectories = max_trajectories
     
-    def _compute_middle(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Extract motion trajectories from optical flow.
         
         Returns:
             Dict with trajectory paths and statistics
         """
+        self.validate_inputs(analysis_data)
+        
         if 'optical_flow_sparse' in analysis_data:
             return self._extract_sparse_trajectories(analysis_data['optical_flow_sparse'])
         elif 'optical_flow_dense' in analysis_data:
@@ -38,6 +40,7 @@ class MotionTrajectories(MiddleFeature):
     
     def _extract_sparse_trajectories(self, flow_analysis) -> Dict[str, Any]:
         """Extract trajectories from sparse optical flow."""
+        
         tracked_points = flow_analysis.data.get('tracked_points', [])
         point_status = flow_analysis.data.get('point_status', [])
         
@@ -58,7 +61,13 @@ class MotionTrajectories(MiddleFeature):
             if points is None:
                 continue
             
-            for point_idx, (point, is_valid) in enumerate(zip(points, status)):
+            # Handle status as either array or single value
+            if hasattr(status, '__len__'):
+                status_list = status
+            else:
+                status_list = [status] * len(points) if points is not None else []
+            
+            for point_idx, (point, is_valid) in enumerate(zip(points, status_list)):
                 if is_valid:
                     if point_idx not in current_trajectories:
                         current_trajectories[point_idx] = {
@@ -168,17 +177,22 @@ class MotionTrajectories(MiddleFeature):
             
             # Compute displacement
             if len(points) >= 2:
-                start = points[0]
-                end = points[-1]
-                displacement = np.sqrt((end[0] - start[0])**2 + (end[1] - start[1])**2)
+                start = np.array(points[0]).flatten()
+                end = np.array(points[-1]).flatten()
+                if len(start) >= 2 and len(end) >= 2:
+                    displacement = np.sqrt((end[0] - start[0])**2 + (end[1] - start[1])**2)
+                else:
+                    displacement = 0.0
                 displacements.append(displacement)
                 
                 # Compute average speed
                 total_dist = 0
                 for i in range(1, len(points)):
-                    dist = np.sqrt((points[i][0] - points[i-1][0])**2 + 
-                                 (points[i][1] - points[i-1][1])**2)
-                    total_dist += dist
+                    p1 = np.array(points[i-1]).flatten()
+                    p2 = np.array(points[i]).flatten()
+                    if len(p1) >= 2 and len(p2) >= 2:
+                        dist = np.sqrt((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)
+                        total_dist += dist
                 avg_speed = total_dist / len(points)
                 speeds.append(avg_speed)
         

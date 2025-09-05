@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any, Tuple
 
-from ..base import MiddleFeature
+from ..base import BaseFeature
 
 
-class SpatialOccupancyGrid(MiddleFeature):
+class SpatialOccupancyGrid(BaseFeature):
     """Create spatial occupancy grid showing activity distribution."""
     
     FEATURE_NAME = 'spatial_occupancy_grid'
@@ -23,12 +23,14 @@ class SpatialOccupancyGrid(MiddleFeature):
         self.grid_size = grid_size
         self.threshold = threshold
     
-    def _compute_middle(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Compute spatial occupancy grid.
         
         Returns:
             Dict with occupancy grid and statistics
         """
+        self.validate_inputs(analysis_data)
+        
         if 'frame_diff' in analysis_data:
             activity_data = analysis_data['frame_diff'].data['pixel_diff']
         elif 'background_mog2' in analysis_data:

@@ -5,14 +5,14 @@ import cv2
 from typing import Dict, Any
 from skimage.metrics import structural_similarity as ssim
 
-from ..base import MiddleFeature
+from ..base import BaseFeature
 
 
-class StructuralSimilarity(MiddleFeature):
+class StructuralSimilarity(BaseFeature):
     """Compute SSIM between consecutive frames."""
     
     FEATURE_NAME = 'structural_similarity'
-    REQUIRED_ANALYSES = []  # Works directly with raw frames
+    REQUIRED_ANALYSES = ['frame_diff']  # Needs frame_diff for now
     
     def __init__(self, win_size: int = 7, multichannel: bool = False):
         """
@@ -24,12 +24,14 @@ class StructuralSimilarity(MiddleFeature):
         self.win_size = win_size
         self.multichannel = multichannel
     
-    def _compute_middle(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Compute structural similarity metrics.
         
         Returns:
             Dict with SSIM scores and difference maps
         """
+        self.validate_inputs(analysis_data)
+        
         # This would need access to original frames
         # For now, we can compute from frame_diff if available
         if 'frame_diff' in analysis_data:
@@ -56,6 +58,7 @@ class StructuralSimilarity(MiddleFeature):
     
     def _detect_change_points(self, scores: list, threshold: float = 0.7) -> list:
         """Detect frames where similarity drops significantly."""
+        
         change_points = []
         for i in range(len(scores)):
             if scores[i] < threshold:

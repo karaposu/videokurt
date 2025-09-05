@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any, List, Tuple, Optional
 
-from ..base import MiddleFeature
+from ..base import BaseFeature
 
 
-class BoundaryCrossings(MiddleFeature):
+class BoundaryCrossings(BaseFeature):
     """Detect when motion crosses predefined boundaries."""
     
     FEATURE_NAME = 'boundary_crossings'
@@ -23,12 +23,14 @@ class BoundaryCrossings(MiddleFeature):
         super().__init__()
         self.boundaries = boundaries
     
-    def _compute_middle(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Detect boundary crossing events.
         
         Returns:
             Dict with crossing events and statistics
         """
+        self.validate_inputs(analysis_data)
+        
         # Get motion data
         if 'optical_flow_dense' in analysis_data:
             return self._detect_flow_crossings(analysis_data['optical_flow_dense'])
@@ -39,6 +41,7 @@ class BoundaryCrossings(MiddleFeature):
     
     def _detect_flow_crossings(self, flow_analysis) -> Dict[str, Any]:
         """Detect crossings from optical flow."""
+        
         flow_field = flow_analysis.data['flow_field']
         
         if len(flow_field) == 0:

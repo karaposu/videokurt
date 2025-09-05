@@ -7,10 +7,10 @@ from scipy.ndimage import gaussian_filter, morphology
 from scipy.interpolate import interp1d
 import cv2
 
-from ..base import AdvancedFeature
+from ..base import BaseFeature
 
 
-class TransitionTypeDetection(AdvancedFeature):
+class TransitionTypeDetection(BaseFeature):
     """Detect and classify video transitions with detailed characteristics."""
     
     FEATURE_NAME = 'transition_type_detection'
@@ -40,7 +40,7 @@ class TransitionTypeDetection(AdvancedFeature):
         self.wipe_directional_threshold = wipe_directional_threshold
         self.morph_kernel_size = morph_kernel_size
     
-    def _compute_advanced(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Detect and classify transitions using comprehensive analysis.
         
         Returns:
@@ -48,7 +48,7 @@ class TransitionTypeDetection(AdvancedFeature):
         """
         frame_diffs = analysis_data['frame_diff'].data['pixel_diff']
         edge_maps = analysis_data['edge_canny'].data['edge_map']
-        color_hists = analysis_data['color_histogram'].data['histogram']
+        color_hists = analysis_data['color_histogram'].data['histograms']
         flow_field = analysis_data['optical_flow_dense'].data['flow_field']
         
         if len(frame_diffs) == 0:

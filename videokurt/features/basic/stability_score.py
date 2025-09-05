@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any
 
-from ..base import BasicFeature
+from ..base import BaseFeature
 
 
-class StabilityScore(BasicFeature):
+class StabilityScore(BaseFeature):
     """Measure content stability over time windows."""
     
     FEATURE_NAME = 'stability_score'
@@ -22,12 +22,14 @@ class StabilityScore(BasicFeature):
         self.window_size = window_size
         self.threshold = threshold
     
-    def _compute_basic(self, analysis_data: Dict[str, Any]) -> np.ndarray:
+    def compute(self, analysis_data: Dict[str, Any]) -> np.ndarray:
         """Compute stability scores over temporal windows.
         
         Returns:
             Array of stability scores (0=changing, 1=stable)
         """
+        self.validate_inputs(analysis_data)
+        
         frame_diff_analysis = analysis_data['frame_diff']
         pixel_diffs = frame_diff_analysis.data['pixel_diff']
         

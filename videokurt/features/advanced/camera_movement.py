@@ -5,10 +5,10 @@ from typing import Dict, Any, List, Tuple, Optional
 from scipy import signal
 from scipy.ndimage import gaussian_filter
 
-from ..base import AdvancedFeature
+from ..base import BaseFeature
 
 
-class CameraMovement(AdvancedFeature):
+class CameraMovement(BaseFeature):
     """Classify camera movement patterns from optical flow with robust algorithms."""
     
     FEATURE_NAME = 'camera_movement'
@@ -35,7 +35,7 @@ class CameraMovement(AdvancedFeature):
         self.min_movement_frames = min_movement_frames
         self.grid_size = grid_size
     
-    def _compute_advanced(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Classify camera movements using robust optical flow analysis.
         
         Returns:

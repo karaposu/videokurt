@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any, List
 
-from ..base import MiddleFeature
+from ..base import BaseFeature
 
 
-class TemporalActivityPatterns(MiddleFeature):
+class TemporalActivityPatterns(BaseFeature):
     """Extract temporal patterns from activity data."""
     
     FEATURE_NAME = 'temporal_activity_patterns'
@@ -22,12 +22,14 @@ class TemporalActivityPatterns(MiddleFeature):
         self.window_size = window_size
         self.overlap = overlap
     
-    def _compute_middle(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Extract temporal activity patterns.
         
         Returns:
             Dict with temporal patterns and statistics
         """
+        self.validate_inputs(analysis_data)
+        
         frame_diff_data = analysis_data['frame_diff'].data['pixel_diff']
         
         # Compute activity timeline
@@ -64,6 +66,7 @@ class TemporalActivityPatterns(MiddleFeature):
     
     def _extract_patterns(self, timeline: np.ndarray) -> List[Dict]:
         """Extract patterns from temporal windows."""
+        
         patterns = []
         stride = int(self.window_size * (1 - self.overlap))
         

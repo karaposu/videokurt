@@ -6,10 +6,10 @@ from scipy import signal, stats
 from scipy.ndimage import label, binary_dilation, binary_erosion
 from scipy.spatial.distance import cosine
 
-from ..base import AdvancedFeature
+from ..base import BaseFeature
 
 
-class UIChangeDetection(AdvancedFeature):
+class UIChangeDetection(BaseFeature):
     """Detect UI changes using structural analysis and pattern recognition."""
     
     FEATURE_NAME = 'ui_change_detection'
@@ -39,7 +39,7 @@ class UIChangeDetection(AdvancedFeature):
         self.edge_density_bins = edge_density_bins
         self.color_similarity_threshold = color_similarity_threshold
     
-    def _compute_advanced(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Detect UI changes using multi-modal analysis.
         
         Returns:
@@ -47,7 +47,7 @@ class UIChangeDetection(AdvancedFeature):
         """
         edge_maps = analysis_data['edge_canny'].data['edge_map']
         frame_diffs = analysis_data['frame_diff'].data['pixel_diff']
-        color_hists = analysis_data['color_histogram'].data['histogram']
+        color_hists = analysis_data['color_histogram'].data['histograms']
         
         if len(edge_maps) == 0:
             return self._empty_result()

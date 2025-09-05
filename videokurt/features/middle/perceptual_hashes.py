@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any, List
 
-from ..base import MiddleFeature
+from ..base import BaseFeature
 
 
-class PerceptualHashes(MiddleFeature):
+class PerceptualHashes(BaseFeature):
     """Compute perceptual hashes for frame similarity."""
     
     FEATURE_NAME = 'perceptual_hashes'
@@ -20,12 +20,14 @@ class PerceptualHashes(MiddleFeature):
         super().__init__()
         self.hamming_threshold = hamming_threshold
     
-    def _compute_middle(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Compute perceptual hash similarities.
         
         Returns:
             Dict with hash similarities and duplicate frames
         """
+        self.validate_inputs(analysis_data)
+        
         dct_analysis = analysis_data['dct_transform']
         hashes = dct_analysis.data.get('perceptual_hashes')
         
@@ -61,6 +63,7 @@ class PerceptualHashes(MiddleFeature):
     
     def _hamming_distance(self, hash1: np.ndarray, hash2: np.ndarray) -> int:
         """Compute Hamming distance between two hashes."""
+        
         if len(hash1) != len(hash2):
             return max(len(hash1), len(hash2)) * 8  # Maximum distance
         

@@ -4,7 +4,7 @@ A video analysis tool that determines active vs inactive periods
 without understanding content.
 """
 
-from .videokurt import VideoKurt
+from .videokurt_new import VideoKurt
 
 __version__ = "0.1.0"
 

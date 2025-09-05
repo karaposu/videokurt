@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any
 
-from ..base import BasicFeature
+from ..base import BaseFeature
 
 
-class FrameDifferencePercentile(BasicFeature):
+class FrameDifferencePercentile(BaseFeature):
     """Compute percentile of pixel differences per frame."""
     
     FEATURE_NAME = 'frame_difference_percentile'
@@ -20,12 +20,14 @@ class FrameDifferencePercentile(BasicFeature):
         super().__init__()
         self.percentile = percentile
     
-    def _compute_basic(self, analysis_data: Dict[str, Any]) -> np.ndarray:
+    def compute(self, analysis_data: Dict[str, Any]) -> np.ndarray:
         """Compute percentile of pixel differences.
         
         Returns:
             Array of percentile values per frame
         """
+        self.validate_inputs(analysis_data)
+        
         frame_diff_analysis = analysis_data['frame_diff']
         pixel_diffs = frame_diff_analysis.data['pixel_diff']
         

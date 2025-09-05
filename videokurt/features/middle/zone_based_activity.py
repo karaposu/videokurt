@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any, List, Tuple, Optional
 
-from ..base import MiddleFeature
+from ..base import BaseFeature
 
 
-class ZoneBasedActivity(MiddleFeature):
+class ZoneBasedActivity(BaseFeature):
     """Measure activity levels in predefined spatial zones."""
     
     FEATURE_NAME = 'zone_based_activity'
@@ -23,12 +23,14 @@ class ZoneBasedActivity(MiddleFeature):
         self.zones = zones
         self.grid_size = grid_size
     
-    def _compute_middle(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Compute activity levels per zone.
         
         Returns:
             Dict with zone activity timelines and statistics
         """
+        self.validate_inputs(analysis_data)
+        
         # Get activity data
         if 'frame_diff' in analysis_data:
             activity_data = analysis_data['frame_diff'].data['pixel_diff']
@@ -96,6 +98,8 @@ class ZoneBasedActivity(MiddleFeature):
     def _create_grid_zones(self, height: int, width: int, 
                           grid_size: Tuple[int, int]) -> List[Dict]:
         """Create grid-based zones."""
+        # No need to validate here, already validated in compute()
+        
         rows, cols = grid_size
         zone_h = height // rows
         zone_w = width // cols

@@ -8,10 +8,10 @@ from scipy.ndimage import gaussian_filter
 from scipy.spatial.distance import euclidean, cosine
 import warnings
 
-from ..base import AdvancedFeature
+from ..base import BaseFeature
 
 
-class RepetitivePatternClassification(AdvancedFeature):
+class RepetitivePatternClassification(BaseFeature):
     """Classify and analyze repetitive visual patterns using multi-modal analysis."""
     
     FEATURE_NAME = 'repetitive_pattern_classification'
@@ -45,7 +45,7 @@ class RepetitivePatternClassification(AdvancedFeature):
         self.use_phase_analysis = use_phase_analysis
         self.pattern_memory = pattern_memory
     
-    def _compute_advanced(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Classify repetitive patterns using comprehensive analysis.
         
         Returns:
@@ -55,7 +55,7 @@ class RepetitivePatternClassification(AdvancedFeature):
         frame_diffs = analysis_data['frame_diff'].data['pixel_diff']
         flow_field = analysis_data['optical_flow_dense'].data['flow_field']
         edge_maps = analysis_data['edge_canny'].data['edge_map']
-        color_hists = analysis_data['color_histogram'].data['histogram']
+        color_hists = analysis_data['color_histogram'].data['histograms']
         
         if len(frame_diffs) == 0:
             return self._empty_result()

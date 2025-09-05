@@ -3,10 +3,10 @@
 import numpy as np
 from typing import Dict, Any, List, Tuple
 
-from ..base import AdvancedFeature
+from ..base import BaseFeature
 
 
-class ScrollingDetection(AdvancedFeature):
+class ScrollingDetection(BaseFeature):
     """Detect scrolling patterns in screen recordings."""
     
     FEATURE_NAME = 'scrolling_detection'
@@ -23,7 +23,7 @@ class ScrollingDetection(AdvancedFeature):
         self.consistency_threshold = consistency_threshold
         self.min_scroll_frames = min_scroll_frames
     
-    def _compute_advanced(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    def compute(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
         """Detect scrolling patterns from optical flow.
         
         Returns:

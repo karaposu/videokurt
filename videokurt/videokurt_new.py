@@ -17,8 +17,8 @@ from videokurt.raw_analysis import (
 )
 from videokurt.features import (
     BASIC_FEATURES,
-    # MIDDLE_FEATURES,
-    # ADVANCED_FEATURES,
+    MIDDLE_FEATURES,
+    ADVANCED_FEATURES,
 )
 
 
@@ -90,23 +90,30 @@ class VideoKurt:
         else:
             raise TypeError(f"analysis must be string or BaseAnalysis, got {type(analysis)}")
     
-    def add_feature(self, feature: str):
+    def add_feature(self, feature: str, **kwargs):
         """
         Add feature and auto-include required analyses.
         
         Args:
             feature: Name of feature to compute
+            **kwargs: Feature-specific parameters
             
         Note:
             This will automatically add any required analyses
             with default configurations if not already present.
         """
-        # TODO: Implement once feature registry is set up
-        if feature not in BASIC_FEATURES:
+        # Check all feature registries
+        if feature in BASIC_FEATURES:
+            feature_class = BASIC_FEATURES[feature]
+        elif feature in MIDDLE_FEATURES:
+            feature_class = MIDDLE_FEATURES[feature]
+        elif feature in ADVANCED_FEATURES:
+            feature_class = ADVANCED_FEATURES[feature]
+        else:
             raise ValueError(f"Unknown feature: {feature}")
         
-        feature_class = BASIC_FEATURES[feature]
-        self._features[feature] = feature_class
+        # Create feature instance with provided parameters
+        self._features[feature] = feature_class(**kwargs)
         
         # Auto-add required analyses with defaults
         for req in feature_class.REQUIRED_ANALYSES:
@@ -341,9 +348,56 @@ class VideoKurt:
         Args:
             results: RawAnalysisResults to add features to
         """
-        # TODO: Implement feature computation
-        # This will add a 'features' attribute to results
-        pass
+        if not self._features:
+            return
+        
+        # Build dict of analysis results for feature computation
+        analysis_data = {
+            name: result for name, result in results.analyses.items()
+        }
+        
+        # Store computed features
+        computed_features = {}
+        
+        for feature_name, feature_instance in self._features.items():
+            try:
+                print(f"Computing feature: {feature_name}...")
+                start_time = time.time()
+                
+                # Check if required analyses are available
+                missing_analyses = []
+                for required in feature_instance.REQUIRED_ANALYSES:
+                    if required not in analysis_data:
+                        missing_analyses.append(required)
+                
+                if missing_analyses:
+                    print(f"  Warning: Skipping {feature_name} - missing analyses: {missing_analyses}")
+                    continue
+                
+                # Compute the feature
+                feature_data = feature_instance.compute(analysis_data)
+                
+                # Create FeatureResult
+                from .models import FeatureResult
+                feature_result = FeatureResult(
+                    name=feature_name,
+                    data=feature_data,
+                    metadata={'config': feature_instance.config if hasattr(feature_instance, 'config') else {}},
+                    dtype=str(feature_data.dtype) if hasattr(feature_data, 'dtype') else type(feature_data).__name__,
+                    shape=feature_data.shape if hasattr(feature_data, 'shape') else None,
+                    compute_time=time.time() - start_time,
+                    required_analyses=feature_instance.REQUIRED_ANALYSES
+                )
+                
+                computed_features[feature_name] = feature_result
+                print(f"  Completed in {feature_result.compute_time:.2f}s")
+                
+            except Exception as e:
+                print(f"  Error computing {feature_name}: {e}")
+                continue
+        
+        # Add features to results
+        results.features = computed_features
     
     def list_analyses(self) -> List[str]:
         """List configured analyses."""
