@@ -1,6 +1,6 @@
 """Blob tracking example - tracks moving objects/regions in video."""
 
-# to run python example_blob_tracking.py
+# to run python videokurt/smoke_tests/feat_test_blob_tracking.py
 from videokurt import VideoKurt
 import numpy as np
 

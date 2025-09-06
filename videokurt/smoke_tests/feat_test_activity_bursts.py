@@ -1,6 +1,6 @@
 """Activity bursts detection example - identifies periods of intense activity."""
 
-# to run python example_activity_bursts.py
+# to run python videokurt/smoke_tests/feat_test_activity_bursts.py
 
 from videokurt import VideoKurt
 import numpy as np

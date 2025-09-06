@@ -1,6 +1,6 @@
 """Structural similarity example - measures visual structure similarity between frames."""
 
-# to run python example_structural_similarity.py
+# to run python videokurt/smoke_tests/feat_test_structural_similarity.py
 from videokurt import VideoKurt
 import numpy as np
 

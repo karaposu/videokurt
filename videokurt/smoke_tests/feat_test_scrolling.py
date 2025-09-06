@@ -1,6 +1,6 @@
 """Scrolling detection example - identifies scrolling patterns in screen recordings."""
 
-# to run python example_scrolling.py
+# to run python videokurt/smoke_tests/feat_test_scrolling.py
 
 from videokurt import VideoKurt
 import numpy as np

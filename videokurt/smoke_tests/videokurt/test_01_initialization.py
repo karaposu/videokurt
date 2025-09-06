@@ -8,7 +8,7 @@ Run: python -m videokurt.smoke_tests.videokurt.test_01_initialization
 import sys
 from pathlib import Path
 
-from videokurt.videokurt_new import VideoKurt, VideoLoadError, ConfigurationError
+from videokurt.videokurt import VideoKurt, VideoLoadError, ConfigurationError
 
 
 def test_import():
@@ -111,7 +111,7 @@ def test_validate_empty():
 
 def test_convenience_function():
     """Test that convenience function is available."""
-    from videokurt.videokurt_new import analyze_video
+    from videokurt.videokurt import analyze_video
     
     assert analyze_video is not None
     print("✓ Convenience function available")

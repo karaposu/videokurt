@@ -1,6 +1,6 @@
 """Blob stability example - tracks persistence of moving objects."""
 
-# to run python example_blob_stability.py
+# to run python videokurt/smoke_tests/feat_test_blob_stability.py
 from videokurt import VideoKurt
 import numpy as np
 

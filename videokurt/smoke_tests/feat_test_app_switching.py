@@ -1,6 +1,6 @@
 """App/Window switching detection - identifies when users switch between applications or windows."""
 
-# to run python example_app_switching.py
+# to run python videokurt/smoke_tests/feat_test_app_switching.py
 
 from videokurt import VideoKurt
 import numpy as np

@@ -10,7 +10,7 @@ import time
 import cv2
 import numpy as np
 from pathlib import Path
-from videokurt.videokurt_new import VideoKurt
+from videokurt.videokurt import VideoKurt
 
 
 def load_video_segment(video_path, duration_seconds=12.5):

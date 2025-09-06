@@ -1,6 +1,6 @@
 """Edge density feature example - measures visual complexity and structure."""
 
-# to run python example_edge_density.py
+# to run python videokurt/smoke_tests/feat_test_edge_density.py
 from videokurt import VideoKurt
 import numpy as np
 

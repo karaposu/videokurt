@@ -9,7 +9,7 @@ import sys
 import numpy as np
 import cv2
 from pathlib import Path
-from videokurt.videokurt_new import VideoKurt
+from videokurt.videokurt import VideoKurt
 from videokurt.samplemaker import (
     create_frame_sequence,
     create_test_video_frames,

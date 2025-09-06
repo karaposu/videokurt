@@ -1,6 +1,6 @@
 """Perceptual hashes example - generates hashes for visual similarity comparison."""
 
-# to run python example_perceptual_hashes.py
+# to run python videokurt/smoke_tests/feat_test_perceptual_hashes.py
 from videokurt import VideoKurt
 import numpy as np
 

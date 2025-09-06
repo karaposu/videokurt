@@ -1,6 +1,6 @@
 """Example showing MotionMagnitude feature - measures intensity of motion per frame."""
 
-# to run python example_motion_magnitude.py
+# to run python videokurt/smoke_tests/feat_test_motion_magnitude.py
 from videokurt import VideoKurt
 import numpy as np
 

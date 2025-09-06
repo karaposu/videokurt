@@ -1,6 +1,6 @@
 """Connected components example - identifies distinct connected regions."""
 
-# to run python example_connected_components.py
+# to run python videokurt/smoke_tests/feat_test_connected_components.py
 from videokurt import VideoKurt
 import numpy as np
 

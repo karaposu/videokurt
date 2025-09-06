@@ -1,6 +1,6 @@
 """Boundary crossings example - detects objects crossing defined boundaries."""
 
-# to run python example_boundary_crossings.py
+# to run python videokurt/smoke_tests/feat_test_boundary_crossings.py
 from videokurt import VideoKurt
 import numpy as np
 

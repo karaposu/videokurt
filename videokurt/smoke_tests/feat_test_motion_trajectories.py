@@ -1,6 +1,6 @@
 """Motion trajectories example - tracks movement paths through video."""
 
-# to run python example_motion_trajectories.py
+# to run python videokurt/smoke_tests/feat_test_motion_trajectories.py
 from videokurt import VideoKurt
 import numpy as np
 

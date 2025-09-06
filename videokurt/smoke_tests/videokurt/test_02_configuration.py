@@ -6,7 +6,7 @@ Run: python -m videokurt.smoke_tests.videokurt.test_02_configuration
 """
 
 import sys
-from videokurt.videokurt_new import VideoKurt, ConfigurationError
+from videokurt.videokurt import VideoKurt, ConfigurationError
 from videokurt.raw_analysis import FrameDiff, OpticalFlowDense
 
 

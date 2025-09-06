@@ -1,6 +1,6 @@
 """Interaction zones example - detects areas where objects interact."""
 
-# to run python example_interaction_zones.py
+# to run python videokurt/smoke_tests/feat_test_interaction_zones.py
 from videokurt import VideoKurt
 import numpy as np
 

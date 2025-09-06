@@ -1,6 +1,6 @@
 """Spatial occupancy grid example - shows activity distribution across frame regions."""
 
-# to run python example_spatial_occupancy.py
+# to run python videokurt/smoke_tests/feat_test_spatial_occupancy.py
 from videokurt import VideoKurt
 import numpy as np
 

@@ -1,6 +1,6 @@
 """Repetition detection example - finds periodic patterns in video."""
 
-# to run python example_repetition.py
+# to run python videokurt/smoke_tests/feat_test_repetition.py
 from videokurt import VideoKurt
 import numpy as np
 

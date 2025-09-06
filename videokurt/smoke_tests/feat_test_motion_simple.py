@@ -1,6 +1,6 @@
 """Simple motion analysis example comparing different motion features."""
 
-# to run python example_motion_simple.py
+# to run python videokurt/smoke_tests/feat_test_motion_simple.py
 from videokurt import VideoKurt
 import numpy as np
 

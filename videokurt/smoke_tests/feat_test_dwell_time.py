@@ -1,6 +1,6 @@
 """Dwell time maps example - shows how long activity persists in different regions."""
 
-# to run python example_dwell_time.py
+# to run python videokurt/smoke_tests/feat_test_dwell_time.py
 from videokurt import VideoKurt
 import numpy as np
 

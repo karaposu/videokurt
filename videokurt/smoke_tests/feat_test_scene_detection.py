@@ -1,6 +1,6 @@
 """Scene detection example - identifies scene boundaries and transitions."""
 
-# to run python example_scene_detection.py
+# to run python videokurt/smoke_tests/feat_test_scene_detection.py
 from videokurt import VideoKurt
 import numpy as np
 

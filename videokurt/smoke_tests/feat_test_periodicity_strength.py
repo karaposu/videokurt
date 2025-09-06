@@ -1,6 +1,6 @@
 """Periodicity strength example - measures strength of periodic patterns."""
 
-# to run python example_periodicity_strength.py
+# to run python videokurt/smoke_tests/feat_test_periodicity_strength.py
 from videokurt import VideoKurt
 import numpy as np
 

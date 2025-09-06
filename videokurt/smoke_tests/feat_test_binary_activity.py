@@ -1,10 +1,6 @@
 """Example showing how to use BinaryActivity feature with VideoKurt."""
 
-# to run python example_binary_activity.py
-
-# python example_binary_activity
-
-# python example_binary_activity.py
+# to run python videokurt/smoke_tests/feat_test_binary_activity.py
 
 from videokurt import VideoKurt
 
